@@ -115,48 +115,64 @@ def transcribe_audio(path: str) -> str:
 
 
 # =========================================================
-# MAIN
+# MAIN (Batch processing: 1.wav ↔ 1:, 2.wav ↔ 2:, ...)
 # =========================================================
 if __name__ == "__main__":
 
-    audio_path = r"C:\Users\ayham\Desktop\Downloads\HMI SpeechRecognition Dataset\Audio Files HMI\Native Female\wav\1.wav"
+    audio_dir = r"C:\Users\ayham\Desktop\Downloads\HMI SpeechRecognition Dataset\Audio Files HMI\Non-Native Female\wav"
     transcript_path = r"C:\Users\ayham\Desktop\Downloads\HMI SpeechRecognition Dataset\Audio Files HMI\transcript.txt"
 
-    # Load reference sentence 1
-    sentence_id = 1
-    reference_text = load_reference_by_id(transcript_path, sentence_id)
+    num_sentences = 11
+    total_wer = 0.0
 
-    print("\nReference text:")
-    print(reference_text)
+    for sentence_id in range(1, num_sentences + 1):
 
-    print("\n--- Transcribing audio ---")
-    recognized_text = transcribe_audio(audio_path)
+        print("\n" + "=" * 60)
+        print(f"Processing sentence {sentence_id}")
+        print("=" * 60)
 
-    print("\nRecognized text:")
-    print(recognized_text)
+        audio_path = f"{audio_dir}\\{sentence_id}.wav"
 
-    # Tokenize with punctuation (case preserved)
-    ref_tokens = tokenize_with_punctuation(reference_text)
-    rec_tokens = tokenize_with_punctuation(recognized_text)
+        # Load reference
+        reference_text = load_reference_by_id(transcript_path, sentence_id)
+        print("\nReference text:")
+        print(reference_text)
 
-    # Alignment
-    ops = list(align_words(ref_tokens, rec_tokens))
+        # Transcribe
+        print("\n--- Transcribing audio ---")
+        recognized_text = transcribe_audio(audio_path)
+        print("\nRecognized text:")
+        print(recognized_text)
 
-    print("\n--- Word-level analysis ---")
-    for op in ops:
-        if op[0] == "CORRECT":
-            print(f"CORRECT: {op[1]}")
-        elif op[0] == "SUB":
-            print(f"SUBSTITUTION: {op[1]} → {op[2]}")
-        elif op[0] == "DEL":
-            print(f"DELETION: {op[1]}")
-        elif op[0] == "INS":
-            print(f"INSERTION: {op[1]}")
+        # Tokenize
+        ref_tokens = tokenize_with_punctuation(reference_text)
+        rec_tokens = tokenize_with_punctuation(recognized_text)
 
-    # Compute WER
-    subs = sum(1 for o in ops if o[0] == "SUB")
-    dels = sum(1 for o in ops if o[0] == "DEL")
-    ins  = sum(1 for o in ops if o[0] == "INS")
+        # Align
+        ops = list(align_words(ref_tokens, rec_tokens))
 
-    wer = (subs + dels + ins) / len(ref_tokens)
-    print(f"\nWER: {wer:.2%}")
+        print("\n--- Word-level analysis ---")
+        for op in ops:
+            if op[0] == "CORRECT":
+                print(f"CORRECT: {op[1]}")
+            elif op[0] == "SUB":
+                print(f"SUBSTITUTION: {op[1]} → {op[2]}")
+            elif op[0] == "DEL":
+                print(f"DELETION: {op[1]}")
+            elif op[0] == "INS":
+                print(f"INSERTION: {op[1]}")
+
+        # WER calculation
+        subs = sum(1 for o in ops if o[0] == "SUB")
+        dels = sum(1 for o in ops if o[0] == "DEL")
+        ins  = sum(1 for o in ops if o[0] == "INS")
+
+        wer = (subs + dels + ins) / len(ref_tokens)
+        total_wer += wer
+
+        
+        print(f"\nWER for sentence {sentence_id}: {wer:.2%}")
+
+    avg_wer = total_wer / num_sentences
+    print("\n" + "=" * 60)
+    print(f"AVERAGE WER over {num_sentences} sentences: {avg_wer:.2%}")
