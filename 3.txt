@@ -1,0 +1,13 @@
+Acceptance Task:
+ * Reference: My father made him an offer he could not refuse. Held a gun to his head, and assured him that either his brain or his signature would be on the contract. True story.
+ * ASR: My father may his another he could den refuse. Held a gone to gist head, and azure Ed his that either his brain or his signature would be on the contract. Truth toy.
+
+
+Actual Live Demo:
+task1.wav:   The width of the coloured band increases as the size of the drops increases.
+
+task2_a.wav: Cliff played with the industrial noise band Coil on several live performances as well as in the studio at various points throughout the two thousands.
+
+task2_b.wav: These take the shape of a long round arch with its path high above and its two ends apparently beyond the horizon.
+
+task2_c.wav: The Annual Bulletin of the Comparative Law Bureau of the American Bar Association was an American specialty law journal.
